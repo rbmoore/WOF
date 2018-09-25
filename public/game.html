@@ -1,0 +1,126 @@
+<html>
+	<head>
+		<title>Wheel of Fortune</title>
+		<link href="https://fonts.googleapis.com/css?family=Exo:900" rel="stylesheet">
+		<link rel="stylesheet" href="css/main.css">
+		<link rel="stylesheet" href="css/logo.css">
+		<link rel="stylesheet" href="css/board.css">
+		<link rel="stylesheet" href="css/wheel.css">
+	</head>
+	<body>
+		<audio id="fxCorrect"><source src="fx/correct.mp3"/></audio>
+		<audio id="fxWrong"><source src="fx/wrong.mp3"/></audio>
+		<audio id="fxReveal"><source src="fx/reveal.mp3"/></audio>
+		<audio id="fxFail"><source src="fx/fail.mp3"/></audio>
+		<audio id="fxSolve"><source src="fx/solve.mp3"/></audio>
+		<audio id="fxTheme"><source src="fx/theme.mp3"/></audio>
+		<audio id="fxSpin"><source src="fx/spin.mp3"/></audio>
+
+		<div id="logo" class="center hide"></div>
+		<div id="statusbar" class="center">
+			<div id="category"></div>
+			<div id="spinamount" class="hide"></div>
+		</div>
+		<div id="board" class="show center"></div>
+		<div id="scoreboard" class="show center">
+			<div class="playerBlock">
+				<div id="player0" class="player"></div>
+			</div>
+			<div class="playerBlock">
+				<div id="player1" class="player"></div>
+			</div>
+			<div class="playerBlock">
+				<div id="player2" class="player"></div>
+			</div>
+		</div>
+
+		<div id="wheeltick" class="hide center">⇩</div>
+		<img id="wheel" src="img/wheel.png" data-rotation="0" class="hide center" />
+	</body>
+	
+	<script type="text/javascript" src="js/game.js"></script>
+	<script type="text/javascript" src="js/wheel.js"></script>
+	<script>
+		window.Game = new Game();
+		window.Game.HideBoard();
+		window.Game.DrawBoard();
+		window.Game.ClearBoard();
+		window.Game.HideLogo();
+	</script>
+	<script>
+		window.socket = new WebSocket('ws://' + window.location.hostname + ':3001');
+
+		window.socket.onopen = function () {
+			// connection is opened and ready to use
+			window.socket.send(JSON.stringify({type: 'ID', value: 'BOARD'}));
+		};
+
+		window.socket.onerror = function (error) {
+			console.error(error);
+		};
+
+		window.socket.onmessage = function (message) {
+			console.log(message.data);
+
+			try {
+				var json = JSON.parse(message.data);
+			} catch (e) {
+				console.log('This doesn\'t look like a valid JSON: ', message.data);
+				return;
+			}
+
+			if (json.type === 'INTRO') {
+				window.Game.HideBoard();
+				window.Game.ShowLogo();
+				window.Game.ThemeSong();
+			}
+
+			if (json.type === 'INTROSTOP') {
+				window.Game.ThemeSongStop();
+				window.Game.HideLogo();
+				window.Game.ShowBoard();
+				window.Game.ClearBoard();
+			}
+
+			if (json.type === 'CLEARPLAYERS') {
+				window.Game.ClearPlayers();
+			}
+
+			if (json.type === 'ADDPLAYER') {
+				window.Game.AddPlayer(json.player);
+				window.Game.DrawGameScores();
+			}
+
+			if (json.type === 'NEWPUZZLE') {
+				window.Game.ClearBoard();
+				window.Game.ClearGameScores();
+				window.Game.DrawGameScores();
+				window.Game.HideLogo();
+				window.Game.ShowBoard();
+				window.Game.SetPuzzle(json.category, json.puzzle);
+				window.Game.RevealPuzzle();
+			}
+
+			if (json.type === 'SPIN') {
+				window.Game.SpinWheel();
+			}
+
+			if (json.type === 'GUESSLETTER') {
+				window.Game.GuessLetter(json.letter);
+			}
+
+			if (json.type === 'SETPLAYER') {
+				window.Game.SetCurrentPlayer(json.player);
+			}
+
+			if (json.type === 'NEXTPLAYER') {
+				window.Game.NextPlayer();
+			}
+
+			if (json.type === 'SOLVEPUZZLE') {
+				window.Game.SolvePuzzle();
+			}
+		};
+	</script>
+
+</html>

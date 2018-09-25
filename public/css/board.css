@@ -1,0 +1,129 @@
+@font-face {
+	font-family: 'wheel';
+	src: url('fonts/wheel.ttf') format('truetype');
+}
+
+#statusbar {
+	width: 1400px;
+	top: 100px;
+	bottom: inherit;
+	color: #fff;
+	font-family: 'Exo';
+	font-size: 55px;
+	text-shadow: 2px 2px 4px black;
+}
+
+#category {
+	float: left;
+	padding: 5px;
+}
+
+#spinamount {
+	float: right;
+	padding: 5px;
+}
+
+.bankrupt {
+	background-color: #000;
+}
+
+.loseaturn {
+	background-color: #f9f9d1;
+}
+
+#board {
+	width: 1400px;
+	height: 500px;
+	border: solid black 1px;
+	background-color: #a8c4b2;
+}
+
+.letter-block {
+	display: inline-block;
+	width: 100px;
+	height: 100px;
+}
+
+.letter {
+	display: block;
+	width: 96px;
+	height: 96px;
+	line-height: 96px;
+	font-family: 'Exo';
+	font-size: 96px;
+	text-align: center;
+	margin: 2px;
+	border: solid black 1px;
+}
+
+.letter-hide {
+	background-color: #486d3f;
+}
+
+.letter-hide::after {
+	content: "";
+	display: block;
+	width: 100%;
+	height: 100%;
+	position: relative;
+	top: -100%;
+	opacity: 0.05;
+	background-repeat: no-repeat;
+	background-position: center;
+	background-image: url('../img/logo.png');
+	background-size: 50px 50px;
+}
+
+.letter-highlight {
+	background-color: #f9f08e
+}
+
+.letter-show {
+	background-color: #FFF;
+}
+
+#scoreboard {
+	width: 1200px;
+	height: 100px;
+	top: inherit;
+	bottom: 50px;
+}
+
+.playerBlock {
+	display: inline-block;
+	width: 397px;
+	height: 100px;
+}
+
+.player {
+	margin: auto;
+	width: 300px;
+	height: 90px;
+	font-size: 55px;
+	text-align: center;
+	color: #fff;
+	border: solid #fff 1px;
+	text-shadow: 2px 2px 4px black;
+	box-shadow: 2px 2px 4px black;
+	opacity: .4;
+}
+
+.playerName {
+	font-size: 28px;
+}
+
+#player0 {
+	background-color: #a50603;
+}
+
+#player1 {
+	background-color: #e5cb04;
+}
+
+#player2 {
+	background-color: #1703af;
+}
+
+.player-active {
+	opacity: 1;
+}

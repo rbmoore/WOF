@@ -1,0 +1,147 @@
+<html>
+	<head>
+		<title>Wheel of Fortune</title>
+		<style>
+			.puzzle > input {
+				text-transform: uppercase;
+				font-family: monospace;
+			}
+		</style>
+	</head>
+	<body>
+		<fieldset>
+			<legend>Intro</legend>
+			<button id="intro" type="button">Start</button>
+			<button id="introstop" type="button">Stop</button>
+		</fieldset>
+
+		<fieldset>
+			<legend>Player Enrollment</legend>
+			<label>Player 1:</label><input id="player1" type="text" /><button type="button" id="player1set">Set</button><br/>
+			<label>Player 2:</label><input id="player2" type="text" /><button type="button" id="player2set">Set</button><br/>
+			<label>Player 3:</label><input id="player3" type="text" /><button type="button" id="player3set">Set</button></br>
+			<button id="start" type="button">Start</button>
+		</fieldset>
+
+		<fieldset>
+			<legend>New Puzzle</legend>
+			<label>Category:</label><br>
+			<input id="category" type="text" maxlength="30" /><br/>
+			<label>Puzzle:</label><br/>
+			<div class="puzzle">
+				<input id="puzzle1" type="text" maxlength="14" /><br/>
+				<input id="puzzle2" type="text" maxlength="14" /><br/>
+				<input id="puzzle3" type="text" maxlength="14" /><br/>
+				<input id="puzzle4" type="text" maxlength="14" /><br/>
+				<input id="puzzle5" type="text" maxlength="14" /><br/>
+			</div>
+			<button id="startPuzzle" type="button">Start</button>
+		</fieldset>
+
+		<fieldset>
+			<legend>Game Controls</legend>
+			<button id="spin" type="button">Spin</button><br/>
+			<button id="next" type="button">Next Player</button><br/>
+			<button id="solve" type="button">Solve Puzzle</button>
+		</fieldset>
+		
+		<fieldset>
+			<legend>Guess Letter</legend>
+			<label>Letter:</label><input id="letter" type="text" />
+			<button id="guess" type="button">Guess</button>
+		</fieldset>
+
+	</body>
+	<script>
+		window.socket = new WebSocket('ws://' + window.location.hostname + ':3001');
+
+		window.socket.onopen = function () {
+			window.socket.send(JSON.stringify({type: 'ID', value: 'HOST'}));
+		};
+
+		window.socket.onerror = function (error) {
+			console.error(error);
+		};
+
+		window.socket.onmessage = function (message) {
+			try {
+				var json = JSON.parse(message.data);
+			} catch (e) {
+				console.log('This doesn\'t look like a valid JSON: ', message.data);
+				return;
+			}
+			// handle incoming message
+		};
+
+		document.getElementById('intro').addEventListener('click', function () {
+			window.socket.send(JSON.stringify({type: 'INTRO'}));
+		});
+
+		document.getElementById('introstop').addEventListener('click', function () {
+			window.socket.send(JSON.stringify({type: 'INTROSTOP'}));
+		});
+
+		document.getElementById('start').addEventListener('click', function () {
+			var player1 = document.getElementById('player1').value;
+			var player2 = document.getElementById('player2').value;
+			var player3 = document.getElementById('player3').value;
+
+			window.socket.send(JSON.stringify({type: 'CLEARPLAYERS'}));
+			window.socket.send(JSON.stringify({type: 'ADDPLAYER', player: player1}));
+			window.socket.send(JSON.stringify({type: 'ADDPLAYER', player: player2}));
+			window.socket.send(JSON.stringify({type: 'ADDPLAYER', player: player3}));
+		});
+
+		document.getElementById('startPuzzle').addEventListener('click', function () {
+			var category = document.getElementById('category').value;
+			
+			var puzzle = '';
+			puzzle += document.getElementById('puzzle1').value.padEnd(14);
+			puzzle += document.getElementById('puzzle2').value.padEnd(14);
+			puzzle += document.getElementById('puzzle3').value.padEnd(14);
+			puzzle += document.getElementById('puzzle4').value.padEnd(14);
+			puzzle += document.getElementById('puzzle5').value.padEnd(14);
+
+			window.socket.send(JSON.stringify({type: 'NEWPUZZLE', category: category, puzzle: puzzle}));
+		});
+
+		document.getElementById('spin').addEventListener('click', function () {
+			window.socket.send(JSON.stringify({type: 'SPIN'}));
+		});
+
+		document.getElementById('guess').addEventListener('click', function () {
+			var letter = document.getElementById('letter');
+
+			window.socket.send(JSON.stringify({type: 'GUESSLETTER', letter: letter.value}));
+
+			letter.value = '';
+			letter.focus();
+		});
+
+		document.getElementById('player1set').addEventListener('click', function () {
+			var player = document.getElementById('player1').value;
+
+			window.socket.send(JSON.stringify({type: 'SETPLAYER', player: player}));
+		});
+
+		document.getElementById('player2set').addEventListener('click', function () {
+			var player = document.getElementById('player2').value;
+
+			window.socket.send(JSON.stringify({type: 'SETPLAYER', player: player}));
+		});
+
+		document.getElementById('player3set').addEventListener('click', function () {
+			var player = document.getElementById('player3').value;
+
+			window.socket.send(JSON.stringify({type: 'SETPLAYER', player: player}));
+		});
+
+		document.getElementById('next').addEventListener('click', function () {
+			window.socket.send(JSON.stringify({type: 'NEXTPLAYER'}));
+		});
+
+		document.getElementById('solve').addEventListener('click', function () {
+			window.socket.send(JSON.stringify({type: 'SOLVEPUZZLE'}));
+		});
+	</script>
+</html>

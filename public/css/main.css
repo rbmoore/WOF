@@ -1,0 +1,22 @@
+body {
+	background-image: url('../img/bg.png');
+	background-color: #cccccc;
+	overflow-y: hidden;
+}
+
+.hide {
+	display: none;
+}
+
+.show {
+	display: block;
+}
+
+.center {
+	position: absolute;
+	margin: auto;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+}
