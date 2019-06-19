@@ -4,7 +4,6 @@ function Game () {
 	this.category = '';
 	this.puzzle = '';
 	this.lastSpin = '';
-	this.logo = document.getElementById('logo');
 	this.statusbar = document.getElementById('statusbar');
 	this.board = document.getElementById('board');
 	this.scoreboard = document.getElementById('scoreboard');
@@ -14,23 +13,19 @@ function Game () {
 
 Game.prototype = {
 	ShowLogo: function () {
-		this.logo.classList.add('show');
-		this.logo.classList.remove('hide');
+		Show('logo');
 	},
 
 	HideLogo: function () {
-		this.logo.classList.remove('show');
-		this.logo.classList.add('hide');
+		Hide('logo');
 	},
 
 	ThemeSong: function () {
-		document.getElementById('fxTheme').play();
+		Play('fxTheme');
 	},
 
 	ThemeSongStop: function () {
-		var theme = document.getElementById('fxTheme');
-		theme.pause();
-		theme.currentTime = 0;
+		Stop('fxTheme');
 	},
 
 	ClearPlayers: function () {
@@ -50,9 +45,9 @@ Game.prototype = {
 		for (var i = 0; i < this.players.length; i++) {
 			if (this.players[i].name === name) {
 				this.currentPlayer = i;
-				document.getElementById('player' + i).classList.add('player-active');
+				AddClass('player' + i, 'player-active');
 			} else {
-				document.getElementById('player' + i).classList.remove('player-active');
+				RemoveClass('player' + i, 'player-active');
 			}
 		}
 	},
@@ -87,15 +82,15 @@ Game.prototype = {
 
 	DrawGameScores: function () {
 		this.players.forEach(function (player, idx) {
-			document.getElementById('player' + idx).innerHTML = '<span class="playerName">' + player.name  +'</span><br/>$' + player.gameScore.toString();
+			Text('player' + idx, '<span class="playerName">' + player.name  +'</span><br/>$' + player.gameScore);
 		});
 	},
 
 	DrawTotalScores: function () {
 		this.players.forEach(function (player, idx) {
-			var playerTotal = document.getElementById('player' + idx);
-			playerTotal.innerHTML = '<span class="playerName">' + player.name  +'</span><br/>$' + player.totalScore.toString();
-			playerTotal.classList.add('player-active');
+			var id = 'player' + idx;
+			Text(id, '<span class="playerName">' + player.name  +'</span><br/>$' + player.totalScore);
+			AddClass(id, 'player-active');
 		});
 	},
 
@@ -116,25 +111,19 @@ Game.prototype = {
 	},
 
 	ShowBoard: function () {
-		this.statusbar.classList.remove('hide');
-		this.statusbar.classList.add('show');
-		this.board.classList.remove('hide');
-		this.board.classList.add('show');
-		this.scoreboard.classList.remove('hide');
-		this.scoreboard.classList.add('show');
+		Show('statusbar');
+		Show('board');
+		Show('scoreboard');
 	},
 
 	HideBoard: function () {
-		this.statusbar.classList.remove('show');
-		this.statusbar.classList.add('hide');
-		this.board.classList.remove('show');
-		this.board.classList.add('hide');
-		this.scoreboard.classList.remove('show');
-		this.scoreboard.classList.add('hide');
+		Hide('statusbar');
+		Hide('board');
+		Hide('scoreboard');
 	},
 
 	ClearBoard: function () {
-		document.getElementById('category').innerHTML = '';
+		Text('category', '');
 
 		var letters = this.board.querySelectorAll('.letter');
 
@@ -151,7 +140,7 @@ Game.prototype = {
 	},
 
 	RevealPuzzle: function () {
-		document.getElementById('category').innerHTML = this.category;
+		Text('category', this.category);
 		
 		var divLetter;
 
@@ -163,17 +152,17 @@ Game.prototype = {
 			}
 		}
 
-		document.getElementById('fxReveal').play();
+		Play('fxReveal');
 	},
 
 	SolvePuzzle: function () {
 		for (var i = 0; i < this.puzzle.length; i++) {
 			if (this.puzzle[i] !== ' ') {
-				document.getElementById('letter' + i).innerHTML = this.puzzle[i];
+				GetById('letter' + i).innerHTML = this.puzzle[i];
 			}
 		}
 
-		document.getElementById('fxSolve').play();
+		Play('fxSolve');
 
 		this.players[this.currentPlayer].totalScore += this.players[this.currentPlayer].gameScore;
 
@@ -194,7 +183,7 @@ Game.prototype = {
 			var divLetters = [];
 
 			indices.forEach(function (index) {
-				divLetters.push(document.getElementById('letter' + index));
+				divLetters.push(GetById('letter' + index));
 			});
 
 			this.AddGameScore(indices.length * parseInt(this.lastSpin, 10));
@@ -208,41 +197,36 @@ Game.prototype = {
 					div.classList.add('letter-show');
 					div.classList.remove('letter-highlight');
 					div.innerHTML = letter;
-					document.getElementById('fxCorrect').play();
+
+					Play('fxCorrect');
 
 				}, ((idx + 1) * 1700));
 			});
 		} else {
-			document.getElementById('fxWrong').play();
+			Play('fxWrong');
 		}
 	},
 
 	ShowWheel: function () {
-		this.wheel.classList.remove('hide');
-		this.wheel.classList.add('show');
-		this.wheeltick.classList.remove('hide');
-		this.wheeltick.classList.add('show');
+		Show('wheel');
+		Show('wheeltick');
 	},
 
 	HideWheel: function () {
-		this.wheel.classList.remove('show');
-		this.wheel.classList.add('hide');
-		this.wheeltick.classList.remove('show');
-		this.wheeltick.classList.add('hide');
+		Hide('wheel');
+		Hide('wheeltick');
 	},
 
 	SpinWheel: function () {
 		this.HideBoard();
 		this.ShowWheel();
 
-		var wheelfx = document.getElementById('fxSpin')
-		wheelfx.play();
+		Play('fxSpin')
 
 		window.Wheel.spin(function (value) {
 			console.log(value);
 			this.lastSpin = value;
-			wheelfx.pause();
-			wheelfx.currentTime = 0;
+			Stop('fxSpin');
 			this.ShowBoard();
 			this.HideWheel();
 			this.ShowSpinAmount(value);
@@ -294,12 +278,12 @@ Game.prototype = {
 		this.players[this.currentPlayer].gameScore = 0;
 		this.DrawGameScores();
 		this.NextPlayer();
-		document.getElementById('fxFail').play();
+		Play('fxFail');
 	},
 
 	LoseATurn: function () {
 		this.NextPlayer();
-		document.getElementById('fxFail').play();
+		Play('fxFail');
 	}
 };
 
